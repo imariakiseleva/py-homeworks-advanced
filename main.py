@@ -1,28 +1,86 @@
-import requests
-import bs4
 
-url = 'https://habr.com/ru/articles/'
-response = requests.get(url)
 
-KEYWORDS = ['дизайн', 'фото', 'web', 'python']
+# Задача 1
 
-soup = bs4.BeautifulSoup(response.text, features='lxml')
+def order_courses(courses: list, durations: list) -> str:
+    durations_dict = {}
 
-articles = soup.find_all('article')
+    for idx, course in enumerate(courses):
+        key = durations[idx]
 
-for article in articles:
-    text = article.get_text(' ', strip=True).lower()
+        if key not in durations_dict:
+            durations_dict[key] = []
 
-    for keyword in KEYWORDS:
-        if keyword.lower() in text:
-            title_element = article.find('h2')
-            title = title_element.get_text(strip=True)
+        durations_dict[key].append(course)
 
-            link_element = title_element.find('a')
-            link = 'https://habr.com' + link_element['href']
+    durations_dict = dict(sorted(durations_dict.items()))
 
-            date_element = article.find('time')
-            date = date_element['datetime']
+    result = []
 
-            print(f'{date} – {title} – {link}')
-            break
+    for duration, cour in durations_dict.items():
+        if len(cour) == 1:
+            result.append(f'{cour[0]}, {duration} месяцев')
+        else:
+            for course in cour:
+                result.append(f'{course}, {duration} месяцев')
+
+    return '\n'.join(result)
+
+
+# Задача 2
+
+def check_corr(courses_list: list) -> tuple:
+    duration_index = []
+    mcount_index = []
+
+    for idx, course in enumerate(courses_list):
+        duration_index.append([course['duration'], idx])
+        mcount_index.append([len(course['mentors']), idx])
+
+    duration_index.sort()
+    mcount_index.sort()
+
+    indexes_d = []
+    indexes_m = []
+
+    for duration_i in duration_index:
+        indexes_d.append(duration_i[1])
+
+    for indexes in mcount_index:
+        indexes_m.append(indexes[1])
+
+    has_corr = indexes_d == indexes_m
+
+    return has_corr, indexes_d, indexes_m
+
+
+# Задача 3
+
+def same_name(courses_list: list) -> list:
+    mentors_names = []
+
+    for course in courses_list:
+        course_names = []
+
+        for mentor in course['mentors']:
+            name = mentor.split()[0]
+            course_names.append(name)
+
+        mentors_names.append(course_names)
+
+    result = []
+
+    for names, course in zip(mentors_names, courses_list):
+        unique_names = set(names)
+        same_name_list = []
+
+        for unique in unique_names:
+            if names.count(unique) > 1:
+
+                for mentor in course['mentors']:
+                    if mentor.split()[0] == unique:
+                        same_name_list.append(mentor)
+
+        result.append(sorted(same_name_list))
+
+    return result
