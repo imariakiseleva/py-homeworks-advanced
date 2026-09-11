@@ -17,6 +17,7 @@ class Stack:
     def size(self):
         return len(self.items)
 
+
 def check_brackets(sequence):
     stack = Stack()
 
@@ -27,12 +28,10 @@ def check_brackets(sequence):
     }
 
     for bracket in sequence:
-
         if bracket in '([{':
             stack.push(bracket)
 
         elif bracket in ')]}':
-
             if stack.is_empty():
                 return 'Несбалансированно'
 
@@ -41,9 +40,10 @@ def check_brackets(sequence):
 
     if stack.is_empty():
         return 'Сбалансированно'
-    else:
-        return 'Несбалансированно'
 
+    return 'Несбалансированно'
+
+
+if __name__ == '__main__':
     sequence = input('Введите последовательность скобок: ')
-
-print(check_brackets(sequence))
+    print(check_brackets(sequence))
